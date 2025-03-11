@@ -7,7 +7,7 @@
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
-from PasswordHandler import *
+
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
     QMetaObject, QObject, QPoint, QRect,
     QSize, QTime, QUrl, Qt)
@@ -59,9 +59,12 @@ class Ui_MainWindow(object):
         self.personalGroupBox = QGroupBox(self.horizontalLayoutWidget)
         self.personalGroupBox.setObjectName(u"personalGroupBox")
         self.personalGroupBox.setStyleSheet(u"background-color: rgb(119, 118, 123);")
-        self.pushButton = QPushButton(self.personalGroupBox)
-        self.pushButton.setObjectName(u"pushButton")
-        self.pushButton.setGeometry(QRect(210, 50, 171, 31))
+        self.verticalLayoutWidget_2 = QWidget(self.personalGroupBox)
+        self.verticalLayoutWidget_2.setObjectName(u"verticalLayoutWidget_2")
+        self.verticalLayoutWidget_2.setGeometry(QRect(0, 0, 641, 561))
+        self.verticalLayout_2 = QVBoxLayout(self.verticalLayoutWidget_2)
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
 
         self.horizontalLayout.addWidget(self.personalGroupBox)
 
@@ -86,7 +89,5 @@ class Ui_MainWindow(object):
         self.networkVault.setText(QCoreApplication.translate("MainWindow", u"Network Vault", None))
         self.settingsButton.setText(QCoreApplication.translate("MainWindow", u"Settings", None))
         self.personalGroupBox.setTitle(QCoreApplication.translate("MainWindow", u"GroupBox", None))
-        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Add Password", None))
     # retranslateUi
-
 
