@@ -1,7 +1,7 @@
 import sys
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, QEvent, QItemSelectionModel, QAbstractListModel
 from PySide6.QtGui import QStandardItemModel, QStandardItem
-from PySide6.QtWidgets import QMainWindow, QWidget, QPushButton,QApplication
+from PySide6.QtWidgets import QMainWindow, QWidget, QMenu,QApplication
 from Ui.MainWindow import Ui_MainWindow 
 from Ui.AddPassword import Ui_Password
 
@@ -41,6 +41,7 @@ class AddPasswordWindow(QWidget):
 class MainWindow(QMainWindow):
     def __init__(self, passwordHandler):
         super().__init__()
+        self.passwordEntries = passwordHandler.decrypt_kdbx()
         self.passwordwindow = AddPasswordWindow(passwordHandler)
         self.model = QStandardItemModel()
 
@@ -55,14 +56,13 @@ class MainWindow(QMainWindow):
 
         self.listView.setModel(self.model)
         self.load_passwords()
-        
+
         self.passwordwindow.password_added.connect(self.add_new_password)
-        self.addPwdBtn.clicked.connect(self.open_password_window)
+        self.addPwdBtn.clicked.connect(self.printSelected)
 
     def load_passwords(self):
-        passwordEntries = self.passwordHandler.decrypt_kdbx()
-        for x in passwordEntries:
-            item = QStandardItem(x.username)
+        for x in self.passwordEntries:
+            item = Entry(x.username,x.password)
             self.model.appendRow(item)
 
     def open_password_window(self):
@@ -72,8 +72,21 @@ class MainWindow(QMainWindow):
             self.passwordwindow.show()
 
     def add_new_password(self):
-        print("Clicked")
+        pass
+    
+    def printSelected(self):
+        rows = self.listView.selectionModel().selectedRows()
+        print(self.model.rowCount())
+    
+    
+class PasswordEntries(QAbstractListModel):
+    def __init__(self):
+        super().__init__()
 
-            
-
-
+class Entry(QStandardItem):
+    def __init__(self,username,password):
+        super().__init__(username)
+        self.username = username
+        self.password = password
+    def get_password(self):
+        return self.password
