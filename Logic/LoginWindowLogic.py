@@ -1,5 +1,6 @@
 from Ui.Login import Ui_Login
 from PySide6.QtWidgets import QWidget, QDialog, QDialogButtonBox, QVBoxLayout,QLabel
+from PySide6.QtCore import QTimer
 from Logic.PasswordHandler import PasswordHandler
 from pykeepass import PyKeePass
 from Logic.MainWindowLogic import MainWindow
@@ -25,11 +26,14 @@ class LoginWindow(QWidget):
             self.givenpassword = self.ui.lineEdit.text()
             self.passwordHandler.kp = PyKeePass('/home/marci/Documents/TestingXC.kdbx', password=self.givenpassword)
         except:
+                print("error during password check")
                 self.error_dialog.exec()
         else: 
-            mainWindow = MainWindow(self.passwordHandler)
-            mainWindow.show()
-            self.close()
+            print("Password correct opening main window")
+            self.mainWindow = MainWindow(self.passwordHandler)
+            self.mainWindow.show()
+            self.mainWindow.raise_()
+            QTimer.singleShot(100, self.close)  # Delay the close method to ensure the window shows first
 
 class CustomDialog(QDialog):
     def __init__(self):
