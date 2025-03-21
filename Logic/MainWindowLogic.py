@@ -1,79 +1,56 @@
 import sys
 from PySide6.QtCore import Signal, QEvent, QItemSelectionModel, QAbstractListModel, Qt
-from PySide6.QtGui import QStandardItemModel, QStandardItem,QAction
-from PySide6.QtWidgets import QMainWindow, QWidget, QMenu,QApplication, QLabel
-from Ui.MainWindow import Ui_MainWindow 
-from Ui.AddPassword import Ui_Password
+from PySide6.QtGui import QStandardItemModel, QStandardItem,QAction, QPalette,QColor
+from PySide6.QtWidgets import QMainWindow, QWidget, QMenu,QApplication, QLabel, QHBoxLayout,QPushButton
+from View.MainWindow import Ui_MainWindow 
+from View.AddPassword import Ui_Password
 
 
 class AddPasswordWindow(QWidget):
     password_added = Signal()
-    def __init__(self, passwordHandler):
+    def __init__(self):
         super().__init__()
-        self.passwordHandler = passwordHandler
+        #Setting up the "Add Password Winow"
         self.ui = Ui_Password()
         self.ui.setupUi(self)
         self.savePassword = self.ui.saveButton
         self.savePassword.clicked.connect(self.save_password)
     def save_password(self):
-        self.close()
         self.password_added.emit()
-
-# class PasswordField(QWidget):
-#     def __init__(self,currentEntry):
-#         super().__init__()
-#         layout = QHBoxLayout()
-#         self.pshButton = QPushButton(currentEntry.username)
-#         self.pshButton.clicked.connect(lambda: self.password_to_clipboard(currentEntry))
-#         layout.addWidget(self.pshButton)
-#         self.setLayout(layout)
-#         self.setAutoFillBackground(True)
-#         palette = self.palette()
-#         palette.setColor(QPalette.ColorRole.Window, QColor('red'))
-#         self.setPalette(palette)
-
-#     def password_to_clipboard(self,currentEntry):
-#         clipboard = QApplication.clipboard()
-#         clipboard.setText(currentEntry.password)
-#         print(currentEntry.password)
-
+        self.close()
 
 class MainWindow(QMainWindow):
+    refresh_signal = Signal()
     def __init__(self, passwordHandler):
         super().__init__()
+        #Setting up the main window
         self.passwordEntries = passwordHandler.decrypt_kdbx()
-        self.passwordwindow = AddPasswordWindow(passwordHandler)
+        self.passwordwindow = AddPasswordWindow()
         self.model = QStandardItemModel()
-
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         print("Main window initialized.")
+
+        #Naming the ui elements for easier handling
         self.passwordHandler = passwordHandler
         self.addPwdBtn = self.ui.pushButton
         self.listView = self.ui.listView
-        self.listView.installEventFilter(self)
         self.passwordLayout = self.ui.verticalLayout
 
+        #Wiring the buttons to the methods
+        self.listView.installEventFilter(self)
+        self.passwordHandler.load_passwords(self.model)
         self.listView.setModel(self.model)
-        self.load_passwords()
+        self.passwordwindow.password_added.connect(lambda: passwordHandler.add_new_password(self.passwordwindow,self.model))
+        self.addPwdBtn.clicked.connect(self.open_password_window)
 
-        self.passwordwindow.password_added.connect(self.add_new_password)
-
-    def load_passwords(self):
-        print("loading passwords")
-        for x in self.passwordEntries:
-            item = Entry(x.username,x.password)
-            self.model.appendRow(item)
-
+    #Controller Methods
     def open_password_window(self):
         if self.passwordwindow.isVisible():
             self.passwordwindow.hide()
         else:
             self.passwordwindow.show()
 
-    def add_new_password(self):
-        pass
-    
     def eventFilter(self, source, event):
         if event.type() == QEvent.ContextMenu and source is self.listView:
             selected_item = self.getSelected()
@@ -81,12 +58,16 @@ class MainWindow(QMainWindow):
 
             copy_username = QAction('Copy username', self)
             copy_password =QAction('Copy Password',self)
+            delete_entry = QAction('Delete Entry',self)
 
             copy_username.triggered.connect(lambda: self.copyToClipboard(selected_item.username))
             copy_password.triggered.connect(lambda: self.copyToClipboard(selected_item.password))
+            delete_entry.triggered.connect(lambda: self.passwordHandler.delete_entry(selected_item))
             
+
             context_menu.addAction(copy_username)
             context_menu.addAction(copy_password)
+            context_menu.addAction(delete_entry)
             context_menu.exec_(event.globalPos())
  
             return True
@@ -105,12 +86,4 @@ class MainWindow(QMainWindow):
     def copyToClipboard(self,givenText):
         clipboard = QApplication.clipboard()
         clipboard.setText(givenText)
-        print(givenText)
 
-class Entry(QStandardItem):
-    def __init__(self,username,password):
-        super().__init__(username)
-        self.username = username
-        self.password = password
-    def get_password(self):
-        return self.password

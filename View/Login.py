@@ -16,7 +16,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QLineEdit, QPushButton, QSizePolicy,
-    QVBoxLayout, QWidget)
+    QVBoxLayout, QWidget, QDialog, QDialogButtonBox, QLabel)
 
 class Ui_Login(object):
     def setupUi(self, Form):
@@ -58,3 +58,22 @@ class Ui_Login(object):
         self.exit_button.setText(QCoreApplication.translate("Form", u"Exit", None))
     # retranslateUi
 
+class CustomDialog(QDialog):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Password Error")
+
+        QBtn = (
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+        )
+
+        self.buttonBox = QDialogButtonBox(QBtn)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+
+        layout = QVBoxLayout()
+        message = QLabel("Password is incorrect.")
+        layout.addWidget(message)
+        layout.addWidget(self.buttonBox)
+        self.setLayout(layout)

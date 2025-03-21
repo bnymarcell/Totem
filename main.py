@@ -1,6 +1,6 @@
 import sys
 from Logic.MainWindowLogic import *
-from Logic.PasswordHandler import *
+from Model.Model import *
 from Logic.LoginWindowLogic import *
 
 if __name__ == "__main__":
