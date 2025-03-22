@@ -10,11 +10,15 @@ class LoginWindow(QWidget):
         super().__init__()
         self.passwordHandler = PasswordHandler()
         self.error_dialog = CustomDialog()
-        #self.givenpassword = None
         self.ui = Ui_Login()
         self.ui.setupUi(self)
+
+        self.pathLabel = self.ui.label
         self.loginButton = self.ui.login_button
         self.exitButton = self.ui.exit_button
+
+        self.passwordHandler.pick_database()
+        self.pathLabel.setText(self.passwordHandler.kp)
         self.exitButton.clicked.connect(self.close)
         self.loginButton.clicked.connect(lambda: self.passwordHandler.check_for_masterpwd(self.error_dialog,self.ui.lineEdit,self.passwordHandler,self))
 

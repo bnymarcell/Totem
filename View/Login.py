@@ -15,8 +15,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QLineEdit, QPushButton, QSizePolicy,
-    QVBoxLayout, QWidget, QDialog, QDialogButtonBox, QLabel)
+from PySide6.QtWidgets import (QApplication, QLabel, QLineEdit, QPushButton,
+    QSizePolicy, QVBoxLayout, QWidget, QDialog, QDialogButtonBox)
 
 class Ui_Login(object):
     def setupUi(self, Form):
@@ -46,6 +46,9 @@ class Ui_Login(object):
 
         self.verticalLayout_2.addWidget(self.exit_button)
 
+        self.label = QLabel(Form)
+        self.label.setObjectName(u"label")
+        self.label.setGeometry(QRect(0, 10, 561, 18))
 
         self.retranslateUi(Form)
 
@@ -56,24 +59,22 @@ class Ui_Login(object):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
         self.login_button.setText(QCoreApplication.translate("Form", u"Login", None))
         self.exit_button.setText(QCoreApplication.translate("Form", u"Exit", None))
+        self.label.setText("")
     # retranslateUi
 
 class CustomDialog(QDialog):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Password Error")
+        self.setWindowTitle("Password Error!")
 
-        QBtn = (
-            QDialogButtonBox.Ok | QDialogButtonBox.Cancel
-        )
+        QBtn = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
 
         self.buttonBox = QDialogButtonBox(QBtn)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
 
-        layout = QVBoxLayout()
-        message = QLabel("Password is incorrect.")
-        layout.addWidget(message)
-        layout.addWidget(self.buttonBox)
-        self.setLayout(layout)
+        self.layout = QVBoxLayout()
+        message = QLabel("The provided password was incorrect")
+        self.layout.addWidget(self.buttonBox)
+        self.setLayout(self.layout)
