@@ -41,13 +41,16 @@ class PasswordHandler:
             origin_window.close()
 
     def add_new_password(self,passwordwindow,model):
-        new_password = Entry(passwordwindow.ui.usernameInput.text(),passwordwindow.ui.passwordInput.text())
+        new_kpentry = self.kp.add_entry(self.kp.root_group,'testing',passwordwindow.ui.usernameInput.text(),passwordwindow.ui.passwordInput.text())
+        new_password = Entry(new_kpentry.username,new_kpentry.password,new_kpentry)
         model.appendRow(new_password)
-        self.kp.add_entry(self.kp.root_group,'testing',new_password.username,new_password.password)
         self.kp.save()
     
-    def delete_entry(self,selecteditem,delete_signal):
+    def delete_entry(self,selecteditem,delete_signal,model):
         self.kp.delete_entry(selecteditem.entry)
+        row = model.indexFromItem(selecteditem).row()
+        model.removeRow(row)
+        delete_signal.emit()
         self.kp.save()
 
 

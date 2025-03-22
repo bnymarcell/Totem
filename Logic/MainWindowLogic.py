@@ -62,8 +62,7 @@ class MainWindow(QMainWindow):
 
             copy_username.triggered.connect(lambda: self.copyToClipboard(selected_item.username))
             copy_password.triggered.connect(lambda: self.copyToClipboard(selected_item.password))
-            delete_entry.triggered.connect(lambda: self.passwordHandler.delete_entry(selected_item))
-            
+            delete_entry.triggered.connect(lambda: self.passwordHandler.delete_entry(selected_item,self.refresh_signal,self.model))
 
             context_menu.addAction(copy_username)
             context_menu.addAction(copy_password)
