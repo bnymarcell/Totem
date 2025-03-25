@@ -77,7 +77,23 @@
      </layout>
     </item>
     <item row="0" column="1">
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QTreeView" name="treeView">
+        <property name="maximumSize">
+         <size>
+          <width>200</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(119, 118, 123);</string>
+        </property>
+       </widget>
+      </item>
       <item>
        <widget class="QGroupBox" name="personalGroupBox">
         <property name="styleSheet">

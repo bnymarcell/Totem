@@ -16,8 +16,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QGridLayout, QGroupBox, QHBoxLayout,
-    QListView, QMainWindow, QMenuBar, QPushButton,
-    QSizePolicy, QStatusBar, QVBoxLayout, QWidget)
+    QHeaderView, QListView, QMainWindow, QMenuBar,
+    QPushButton, QSizePolicy, QStatusBar, QTreeView,
+    QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -62,7 +63,15 @@ class Ui_MainWindow(object):
         self.gridLayout_3.addLayout(self.verticalLayout, 0, 0, 1, 1)
 
         self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.treeView = QTreeView(self.centralwidget)
+        self.treeView.setObjectName(u"treeView")
+        self.treeView.setMaximumSize(QSize(200, 16777215))
+        self.treeView.setStyleSheet(u"background-color: rgb(119, 118, 123);")
+
+        self.horizontalLayout.addWidget(self.treeView)
+
         self.personalGroupBox = QGroupBox(self.centralwidget)
         self.personalGroupBox.setObjectName(u"personalGroupBox")
         self.personalGroupBox.setStyleSheet(u"background-color: rgb(119, 118, 123);")
