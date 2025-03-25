@@ -21,14 +21,18 @@ class PasswordHandler:
         else:
             return None
         
+    #TODO:
+    #Add choice to create a new database file if no initial is found 
     def pick_database(self):
         if not self.last_opened:
             file_path, _ = QFileDialog.getOpenFileName(None, "Pick Initial Database","", "Database Files (*.kdbx)")
             if file_path:
                 print(f"Opening file: {file_path}")
                 self.last_opened = file_path
+                return self.last_opened
         else:
             print("last opened file exists")
+            return self.last_opened
 
 
     def save_last_opened_file(self, file_path):
@@ -53,9 +57,10 @@ class PasswordHandler:
     def check_for_masterpwd(self, errorDialog, masterPassword, passwordHandler, origin_window):
         try:
             self.givenpassword = masterPassword.text()
-            self.path_to_file = '/home/marci/Documents/TestingXC.kdbx'
-            self.kp = PyKeePass(self.path_to_file, password=self.givenpassword)
+            self.path_to_file = self.last_opened
             self.save_last_opened_file(self.path_to_file)
+
+            self.kp = PyKeePass(self.path_to_file, password=self.givenpassword)
         except:
                 print("error during password check")
                 print(self.givenpassword)
