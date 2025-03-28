@@ -1,12 +1,12 @@
 import sys
 import os
 from pykeepass import PyKeePass
-from PySide6.QtCore import Signal, QEvent, QItemSelectionModel, QAbstractListModel, Qt, QTimer,QSettings, QCoreApplication
+from PySide6.QtCore import Signal, QEvent, QItemSelectionModel, QAbstractListModel, Qt, QTimer,QSettings, QCoreApplication, QAbstractItemModel
 from PySide6.QtGui import QStandardItemModel, QStandardItem,QAction, QPalette,QColor
 from PySide6.QtWidgets import QMainWindow, QWidget, QMenu,QApplication, QLabel, QHBoxLayout,QPushButton,QFileDialog
 from Logic.MainWindowLogic import MainWindow 
 
-class PasswordHandler:
+class EntryHandler:
 
     def __init__(self):
         self.kp = None
@@ -39,17 +39,17 @@ class PasswordHandler:
         self.settings.setValue("last_opened_file",file_path)
         print(f"Last opened fil saved: {file_path}")
 
-    def decrypt_kdbx(self):
-        entries = self.kp.entries
+    def decrypt_kdbx(self, givenGroup):
+        entries = givenGroup.entries
         return entries
 
     def create_kdbx_entry(self,username, save_password):
         self.kp.add_entry(self.kp.root_group,'testing',username,save_password)
         self.kp.save()
 
-    def load_passwords(self,model):
+    def load_passwords(self,model,givenGroup):
         print("loading passwords")
-        passwordEntries = self.decrypt_kdbx()
+        passwordEntries = self.decrypt_kdbx(givenGroup)
         for x in passwordEntries:
             item = Entry(x.username,x.password,x)
             model.appendRow(item)
@@ -84,6 +84,12 @@ class PasswordHandler:
         model.removeRow(row)
         delete_signal.emit()
         self.kp.save()
+
+    def change_view_based_on_group(self, group, entryModel):
+        entryModel.clear()
+        self.load_passwords(entryModel,group.pykpGroup)
+
+
 
 
 

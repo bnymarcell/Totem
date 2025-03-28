@@ -1,10 +1,10 @@
 import sys
-from PySide6.QtCore import Signal, QEvent, QItemSelectionModel, QAbstractListModel, Qt
+from PySide6.QtCore import Signal, QEvent, QItemSelectionModel, QAbstractListModel, Qt, QModelIndex
 from PySide6.QtGui import QStandardItemModel, QStandardItem,QAction, QPalette,QColor
-from PySide6.QtWidgets import QMainWindow, QWidget, QMenu,QApplication, QLabel, QHBoxLayout,QPushButton
+from PySide6.QtWidgets import QMainWindow, QWidget, QMenu,QApplication, QLabel, QHBoxLayout,QPushButton, QTreeView
 from View.MainWindow import Ui_MainWindow 
 from View.AddPassword import Ui_Password
-
+from Model.GroupModel import GroupHandler
 
 class AddPasswordWindow(QWidget):
     password_added = Signal()
@@ -21,28 +21,34 @@ class AddPasswordWindow(QWidget):
 
 class MainWindow(QMainWindow):
     refresh_signal = Signal()
-    def __init__(self, passwordHandler):
+    def __init__(self, entryHandler):
         super().__init__()
         #Setting up the main window
-        self.passwordEntries = passwordHandler.decrypt_kdbx()
         self.passwordwindow = AddPasswordWindow()
-        self.model = QStandardItemModel()
+        self.entryModel = QStandardItemModel()
+        self.groupModel = QStandardItemModel()
+        self.groupHandler = GroupHandler(entryHandler.kp)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         print("Main window initialized.")
 
         #Naming the ui elements for easier handling
-        self.passwordHandler = passwordHandler
+        self.entryHandler = entryHandler
         self.addPwdBtn = self.ui.pushButton
         self.listView = self.ui.listView
         self.passwordLayout = self.ui.verticalLayout
+        self.groupTree = self.ui.treeView
 
         #Wiring the buttons to the methods
+        self.groupHandler.populate_tree(self.groupModel)
+        self.groupTree.setModel(self.groupModel)
         self.listView.installEventFilter(self)
-        self.passwordHandler.load_passwords(self.model)
-        self.listView.setModel(self.model)
-        self.passwordwindow.password_added.connect(lambda: passwordHandler.add_new_password(self.passwordwindow,self.model))
+        self.entryHandler.load_passwords(self.entryModel,entryHandler.kp.root_group)
+        self.listView.setModel(self.entryModel)
+        self.passwordwindow.password_added.connect(lambda: entryHandler.add_new_password(self.passwordwindow,self.entryModel))
         self.addPwdBtn.clicked.connect(self.open_password_window)
+        self.groupTree.clicked.connect(self.clicked)
+        
 
     #Controller Methods
     def open_password_window(self):
@@ -62,7 +68,7 @@ class MainWindow(QMainWindow):
 
             copy_username.triggered.connect(lambda: self.copyToClipboard(selected_item.username))
             copy_password.triggered.connect(lambda: self.copyToClipboard(selected_item.password))
-            delete_entry.triggered.connect(lambda: self.passwordHandler.delete_entry(selected_item,self.refresh_signal,self.model))
+            delete_entry.triggered.connect(lambda: self.entryHandler.delete_entry(selected_item,self.refresh_signal,self.entryModel))
 
             context_menu.addAction(copy_username)
             context_menu.addAction(copy_password)
@@ -77,7 +83,7 @@ class MainWindow(QMainWindow):
         selected_rows = self.listView.selectionModel().selectedRows()
         if selected_rows:
             index = selected_rows[0]
-            selected_item = self.model.itemFromIndex(index)
+            selected_item = self.entryModel.itemFromIndex(index)
             return selected_item
         else:
             print("No item was selected")
@@ -85,4 +91,8 @@ class MainWindow(QMainWindow):
     def copyToClipboard(self,givenText):
         clipboard = QApplication.clipboard()
         clipboard.setText(givenText)
+
+    def clicked(self, index):
+        item = self.groupModel.itemFromIndex(index)
+        self.entryHandler.change_view_based_on_group(item, self.entryModel)
 
