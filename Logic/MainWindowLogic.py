@@ -47,7 +47,7 @@ class MainWindow(QMainWindow):
         self.listView.setModel(self.entryModel)
         self.passwordwindow.password_added.connect(lambda: entryHandler.add_new_password(self.passwordwindow,self.entryModel))
         self.addPwdBtn.clicked.connect(self.open_password_window)
-        self.groupTree.clicked.connect(self.clicked)
+        self.groupTree.clicked.connect(self.get_group)
         
 
     #Controller Methods
@@ -92,7 +92,8 @@ class MainWindow(QMainWindow):
         clipboard = QApplication.clipboard()
         clipboard.setText(givenText)
 
-    def clicked(self, index):
+    def get_group(self, index):
         item = self.groupModel.itemFromIndex(index)
         self.entryHandler.change_view_based_on_group(item, self.entryModel)
+        print(item.groupName)
 

@@ -10,6 +10,7 @@ class EntryHandler:
 
     def __init__(self):
         self.kp = None
+        self.selectedGroup = None
         self.settings = QSettings("Totem","PasswordManager")
         self.last_opened = self.load_last_opened_file()
         print(self.last_opened)
@@ -40,6 +41,7 @@ class EntryHandler:
         print(f"Last opened fil saved: {file_path}")
 
     def decrypt_kdbx(self, givenGroup):
+        self.selectedGroup = givenGroup
         entries = givenGroup.entries
         return entries
 
@@ -73,7 +75,7 @@ class EntryHandler:
             origin_window.close()
 
     def add_new_password(self,passwordwindow,model):
-        new_kpentry = self.kp.add_entry(self.kp.root_group,'testing',passwordwindow.ui.usernameInput.text(),passwordwindow.ui.passwordInput.text())
+        new_kpentry = self.kp.add_entry(self.selectedGroup,'testing',passwordwindow.ui.usernameInput.text(),passwordwindow.ui.passwordInput.text())
         new_password = Entry(new_kpentry.username,new_kpentry.password,new_kpentry)
         model.appendRow(new_password)
         self.kp.save()

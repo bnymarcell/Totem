@@ -23,9 +23,7 @@ class GroupHandler:
                 parentItem.appendRow(item)
                 self.get_groups(item)
         
-    def get_selected(self,index, groupModel):
-        item = groupModel.itemFromIndex(index)
-        print(item.name)
+
     
 
 
